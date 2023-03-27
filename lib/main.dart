@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kitchen_house/repos/meal_repo.dart';
+
+import 'blocs/meal/meal_bloc.dart';
+import 'models/meal_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -6,62 +11,58 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'House Kitchen',
+      home: RepositoryProvider(
+        create: (context) => MealRepository(),
+        child:  const Home(),
+      )
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+  // final String title;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return BlocProvider(
+        create: (context) => MealBloc(
+          RepositoryProvider.of<MealRepository>(context),
+        )..add(LoadMeal()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('House Kitchen'),
+        ),
+        body: BlocBuilder<MealBloc, MealState>(
+          builder: (context, state) {
+            if(state is MealLoadingState) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if(state is MealLoadedState) {
+              List<MealModel> mealsList = state.meals;
+              return ListView.builder(
+                  itemCount: mealsList.length,
+                  itemBuilder: (_, index) {
+                    return Card(
+                      color: Colors.blue,
+                      elevation: 4,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: ListTile (
+                        title: Text(mealsList[index].name),
+                      ),
+                    );
+                  });
+            }
+            return Container();
+          },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
