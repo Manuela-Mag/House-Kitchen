@@ -41,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String selectedCategory = 'beef';
   int selectedIndex = 0;
+  List<Widget> cards = [];
 
   @override
   void initState() {
@@ -127,7 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           // Constants.CategoryHighlighted =
                           // Constants.itemCategory[_index]["name"];
                           final selectedCategory = categories[i];
-                          List<Widget> cards = [];
 
                           for (int j = i; j < categories.length; j++) {
                             final selectedCategory = categories[j];
@@ -192,50 +192,61 @@ class _MyHomePageState extends State<MyHomePage> {
                 print(state);
                 if (state is MealLoadedState) {
                   List<MealModel> mealsList = state.meals;
-                  return Container(
-                    color: Colors.black12,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 20),
-                        Flexible(
-                          child: GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200,
-                                  // childAspectRatio: 3 / 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 5
-                              ),
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: mealsList.length,
-                              itemBuilder: (_, index) {
-                                return Card(
-                                    color: Colors.white,
-                                    elevation: 4,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    // margin: const EdgeInsets.symmetric(vertical: 10),
-                                    child: Column(
-                                        // mainAxisAlignment: MainAxisAlignment
-                                        //     .spaceEvenly,
-                                        children: [
-                                          Image.network(
-                                            mealsList[index].image,
-                                            // width: 140,
-                                            // height: 140,
-                                          ),
-                                          SizedBox(
-                                              // height: 40,
-                                              // width: 140,
-                                              child: Text(mealsList[index].name))
-                                        ])
-                                );
-                              }),
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: 100,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: cards
                         ),
-                      ],
-                    ),
+                      ),
+                      Container(
+                        color: Colors.black12,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 20),
+                            Flexible(
+                              child: GridView.builder(
+                                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 200,
+                                      // childAspectRatio: 3 / 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 5
+                                  ),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: mealsList.length,
+                                  itemBuilder: (_, index) {
+                                    return Card(
+                                        color: Colors.white,
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        // margin: const EdgeInsets.symmetric(vertical: 10),
+                                        child: Column(
+                                            // mainAxisAlignment: MainAxisAlignment
+                                            //     .spaceEvenly,
+                                            children: [
+                                              Image.network(
+                                                mealsList[index].image,
+                                                // width: 140,
+                                                // height: 140,
+                                              ),
+                                              SizedBox(
+                                                  // height: 40,
+                                                  // width: 140,
+                                                  child: Text(mealsList[index].name))
+                                            ])
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   );
                 }
                 return Container();
