@@ -5,11 +5,11 @@ import 'package:kitchen_house/models/meal_model.dart';
 import '../models/category_model.dart';
 
 class MealRepository {
-  String endpoint = 'https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood';
+  String endpoint = 'https://www.themealdb.com/api/json/v1/1/filter.php?c=';
   String endpointCategories = 'https://www.themealdb.com/api/json/v1/1/categories.php';
 
-  Future<List<MealModel>> getListOfMeals() async {
-    http.Response response = await http.get(Uri.parse(endpoint), headers: {"Content-Type": "application/json"});
+  Future<List<MealModel>> getListOfMeals(String categoryName) async {
+    http.Response response = await http.get(Uri.parse(endpoint + categoryName), headers: {"Content-Type": "application/json"});
     if(response.statusCode == 200) {
       final List meals = jsonDecode(response.body)['meals'];
       return meals.map(((e) => MealModel.fromJson(e))).toList();

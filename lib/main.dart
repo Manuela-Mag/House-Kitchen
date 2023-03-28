@@ -15,18 +15,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'House Kitchen',
+    return MultiBlocProvider(
+        providers: [
+        BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadCategory())),
+        // BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadMeal())),
+    ],
+    child:MaterialApp(
         home: RepositoryProvider(
           create: (context) => MealRepository(),
-          child: const Home(),
+          child: const MyHomePage(title: 'House Kitchen'),
         )
+      )
     );
   }
 }
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String selectedCategory = 'beef';
+  int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void pageChanged(int index, String category) {
+    setState(() {
+      print(category);
+      print(index);
+      selectedIndex = index;
+      selectedCategory = category;
+    });
+  }
 
   // final String title;
   @override
@@ -36,24 +64,39 @@ class Home extends StatelessWidget {
         .size;
     //use only one block?
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) =>
-        MealBloc(RepositoryProvider.of<MealRepository>(context),
-        )
-          ..add(LoadMeal())),
-        BlocProvider(create: (context) =>
-        CategoryBloc(RepositoryProvider.of<MealRepository>(context),
-        )
-          ..add(LoadCategory()))
-      ],
-      child: Scaffold(
+    return
+    // MultiBlocProvider(
+    //   providers: [
+    //     BlocProvider(create: (context) =>
+    //     MealBloc(RepositoryProvider.of<MealRepository>(context),
+    //     )
+    //       ..add(LoadMeal())),
+    //     BlocProvider(create: (context) =>
+    //     CategoryBloc(RepositoryProvider.of<MealRepository>(context),
+    //     )
+    //       ..add(LoadCategory()))
+    //   ],
+    //   child:
+      Scaffold(
         appBar: AppBar(
           title: const Text('House Kitchen'),
         ),
         body: Column(
           children: [
-            const Text("All categories"),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    "All Categories",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  )],
+              ),
+            ),
             BlocBuilder<MealBloc, MealState>(
               builder: (context, state) {
                 if (state is MealLoadingState) {
@@ -61,6 +104,92 @@ class Home extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   );
                 }
+                if (state is CategoryLoadingState) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (state is CategoryLoadedState) {
+                  List<CategoryModel> categories = state.categories;
+                  //context.read<PizzaBloc>().add(AddPizza((Pizza.pizzas[0]))); to move to next state
+                  return
+                    Card(
+                      color: Colors.white60,
+                      child: SizedBox(
+                        height: 110,
+                        child: PageView.builder(
+                        itemCount: 5,
+                        onPageChanged: (index) {
+                          pageChanged(index, categories[index].name);
+                        },
+                        // onPageChanged: (int index) => setState(() => {i = index}),
+                        itemBuilder: (_, i) {
+                          // Constants.CategoryHighlighted =
+                          // Constants.itemCategory[_index]["name"];
+                          final selectedCategory = categories[i];
+                          List<Widget> cards = [];
+
+                          for (int j = i; j < categories.length; j++) {
+                            final selectedCategory = categories[j];
+                            cards.add(
+                              GestureDetector(
+                                onTap: () {
+                                  setState((){
+                                    print(this.selectedCategory);
+                                    this.selectedCategory = categories[j].name;
+                                    selectedIndex = j;
+                                    context.read<MealBloc>().add(LoadMeal(this.selectedCategory));
+                                    print(this.selectedCategory);
+                                  });
+                                },
+                                child: Card(
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    side: selectedIndex == j ? const BorderSide(color: Colors.black, width: 2.0) : BorderSide.none
+                                  ),
+                                  color: Colors.white,
+                                  child: Container(
+                                    width: 90,
+                                    height: 100,
+                                    margin: const EdgeInsets.only(top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        Image.network(
+                                          selectedCategory.image,
+                                          height: 50,
+                                          width: 80,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        Container(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Text(
+                                            selectedCategory.name,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          print("list view");
+                          return ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: cards,
+                          );
+                        },
+                          ),
+                      ),
+                    );
+                }
+                print(state);
                 if (state is MealLoadedState) {
                   List<MealModel> mealsList = state.meals;
                   return Container(
@@ -114,7 +243,6 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
