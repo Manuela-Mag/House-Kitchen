@@ -17,16 +17,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-        BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadCategory())),
-        // BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadMeal())),
-    ],
-    child:MaterialApp(
-        home: RepositoryProvider(
+          BlocProvider(
+              create: (context) =>
+                  MealBloc(MealRepository())..add(LoadCategory())),
+          // BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadMeal())),
+        ],
+        child: MaterialApp(
+            home: RepositoryProvider(
           create: (context) => MealRepository(),
           child: const MyHomePage(title: 'House Kitchen'),
-        )
-      )
-    );
+        )));
   }
 }
 
@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String selectedCategory = 'beef';
+  String selectedCategory = 'Beef';
   int selectedIndex = 0;
   List<Widget> cards = [];
 
@@ -60,200 +60,242 @@ class _MyHomePageState extends State<MyHomePage> {
   // final String title;
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     //use only one block?
 
     return
-    // MultiBlocProvider(
-    //   providers: [
-    //     BlocProvider(create: (context) =>
-    //     MealBloc(RepositoryProvider.of<MealRepository>(context),
-    //     )
-    //       ..add(LoadMeal())),
-    //     BlocProvider(create: (context) =>
-    //     CategoryBloc(RepositoryProvider.of<MealRepository>(context),
-    //     )
-    //       ..add(LoadCategory()))
-    //   ],
-    //   child:
-      Scaffold(
-        appBar: AppBar(
-          title: const Text('House Kitchen'),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "All Categories",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  )],
-              ),
+        // MultiBlocProvider(
+        //   providers: [
+        //     BlocProvider(create: (context) =>
+        //     MealBloc(RepositoryProvider.of<MealRepository>(context),
+        //     )
+        //       ..add(LoadMeal())),
+        //     BlocProvider(create: (context) =>
+        //     CategoryBloc(RepositoryProvider.of<MealRepository>(context),
+        //     )
+        //       ..add(LoadCategory()))
+        //   ],
+        //   child:
+        Scaffold(
+      appBar: AppBar(
+        title: const Text('House Kitchen'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "All Categories",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                )
+              ],
             ),
-            BlocBuilder<MealBloc, MealState>(
-              builder: (context, state) {
-                if (state is MealLoadingState) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (state is CategoryLoadingState) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (state is CategoryLoadedState) {
-                  List<CategoryModel> categories = state.categories;
-                  //context.read<PizzaBloc>().add(AddPizza((Pizza.pizzas[0]))); to move to next state
-                  return
-                    Card(
-                      color: Colors.white60,
-                      child: SizedBox(
-                        height: 110,
-                        child: PageView.builder(
-                        itemCount: 5,
-                        onPageChanged: (index) {
-                          pageChanged(index, categories[index].name);
-                        },
-                        // onPageChanged: (int index) => setState(() => {i = index}),
-                        itemBuilder: (_, i) {
-                          // Constants.CategoryHighlighted =
-                          // Constants.itemCategory[_index]["name"];
-                          final selectedCategory = categories[i];
+          ),
+          BlocBuilder<MealBloc, MealState>(
+            builder: (context, state) {
+              if (state is MealLoadingState) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state is CategoryLoadingState) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state is CategoryLoadedState) {
+                List<CategoryModel> categories = state.categories;
+                context.read<MealBloc>().add(LoadMeal(selectedCategory));
+                return Card(
+                  color: Colors.white60,
+                  child: SizedBox(
+                    height: 110,
+                    child: PageView.builder(
+                      itemCount: 5,
+                      onPageChanged: (index) {
+                        pageChanged(index, categories[index].name);
+                      },
+                      // onPageChanged: (int index) => setState(() => {i = index}),
+                      itemBuilder: (_, i) {
+                        // Constants.CategoryHighlighted =
+                        // Constants.itemCategory[_index]["name"];
+                        final selectedCategory = categories[i];
 
-                          for (int j = i; j < categories.length; j++) {
-                            final selectedCategory = categories[j];
-                            cards.add(
-                              GestureDetector(
-                                onTap: () {
-                                  setState((){
-                                    print(this.selectedCategory);
-                                    this.selectedCategory = categories[j].name;
-                                    selectedIndex = j;
-                                    context.read<MealBloc>().add(LoadMeal(this.selectedCategory));
-                                    print(this.selectedCategory);
-                                  });
-                                },
-                                child: Card(
-                                  elevation: 6,
-                                  shape: RoundedRectangleBorder(
+                        for (int j = i; j < categories.length; j++) {
+                          final selectedCategory = categories[j];
+                          cards.add(
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  print(this.selectedCategory);
+                                  this.selectedCategory = categories[j].name;
+                                  selectedIndex = j;
+                                  context
+                                      .read<MealBloc>()
+                                      .add(LoadMeal(this.selectedCategory));
+                                  print(this.selectedCategory);
+                                });
+                              },
+                              child: Card(
+                                elevation: 6,
+                                shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
-                                    side: selectedIndex == j ? const BorderSide(color: Colors.black, width: 2.0) : BorderSide.none
-                                  ),
-                                  color: Colors.white,
-                                  child: Container(
-                                    width: 90,
-                                    height: 100,
-                                    margin: const EdgeInsets.only(top: 10.0),
-                                    child: Column(
-                                      children: [
-                                        Image.network(
-                                          selectedCategory.image,
-                                          height: 50,
-                                          width: 80,
-                                          fit: BoxFit.cover,
-                                        ),
-                                        Container(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Text(
-                                            selectedCategory.name,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
+                                    side: selectedIndex == j
+                                        ? const BorderSide(
+                                            color: Colors.black, width: 2.0)
+                                        : BorderSide.none),
+                                color: Colors.white,
+                                child: Container(
+                                  width: 90,
+                                  height: 100,
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: Column(
+                                    children: [
+                                      Image.network(
+                                        selectedCategory.image,
+                                        height: 50,
+                                        width: 80,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Text(
+                                          selectedCategory.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            );
-                          }
-                          print("list view");
-                          return ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: cards,
+                            ),
                           );
-                        },
-                          ),
-                      ),
-                    );
-                }
-                print(state);
-                if (state is MealLoadedState) {
-                  List<MealModel> mealsList = state.meals;
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 100,
+                        }
+                        print("list view");
+                        return ListView(
+                            scrollDirection: Axis.horizontal, children: cards);
+                      },
+                    ),
+                  ),
+                );
+              }
+              print(state);
+              if (state is MealLoadedState) {
+                List<MealModel> mealsList = state.meals;
+                return Column(
+                  children: [
+                    Container(
+                      color: const Color(0xFDD3D3D3),
+                      child: SizedBox(
+                        height: 110,
                         child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: cards
-                        ),
+                            scrollDirection: Axis.horizontal, children: cards),
                       ),
-                      Container(
-                        color: Colors.black12,
+                    ),
+                    Container(
+                      color: const Color(0xFDD3D3D3),
+                      height: 10,
+                    ),
+                    Container(
+                      color: const Color(0xFDD3D3D3),
+                      child: SizedBox(
+                        height: 540,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const SizedBox(height: 20),
-                            Flexible(
-                              child: GridView.builder(
-                                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 200,
-                                      // childAspectRatio: 3 / 2,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 5
-                                  ),
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: mealsList.length,
-                                  itemBuilder: (_, index) {
-                                    return Card(
-                                        color: Colors.white,
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16),
-                                        ),
-                                        // margin: const EdgeInsets.symmetric(vertical: 10),
-                                        child: Column(
-                                            // mainAxisAlignment: MainAxisAlignment
-                                            //     .spaceEvenly,
-                                            children: [
-                                              Image.network(
-                                                mealsList[index].image,
-                                                // width: 140,
-                                                // height: 140,
-                                              ),
-                                              SizedBox(
-                                                  // height: 40,
-                                                  // width: 140,
-                                                  child: Text(mealsList[index].name))
-                                            ])
-                                    );
-                                  }),
+                            Expanded(
+                              child: Container(
+                                color: const Color(0xFDD3D3D3),
+                                child: GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                            maxCrossAxisExtent: 200,
+                                            // childAspectRatio: 3 / 2,
+                                            crossAxisSpacing: 5,
+                                            mainAxisSpacing: 5),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: mealsList.length,
+                                    itemBuilder: (_, index) {
+                                      return Card(
+                                          color: Colors.white,
+                                          elevation: 4,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                          ),
+                                          // margin: const EdgeInsets.symmetric(vertical: 10),
+                                          child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              //     .spaceEvenly,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    // Image border
+                                                    child: Image.network(
+                                                      mealsList[index].image,
+                                                      // width: 180,
+                                                      height: 110,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 5.0),
+                                                  child: Text(
+                                                      mealsList[index].name,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w700,
+                                                      fontFamily: 'Manrope'
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 5.0, top: 5),
+                                                  child: Text(
+                                                    selectedCategory,
+                                                    textAlign: TextAlign.left,
+                                                    style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w600,
+                                                        fontStyle: FontStyle.italic,
+                                                        color: Color(0xFD9C9C9C),
+                                                        fontFamily: 'Manrope'
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]));
+                                    }),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  );
-                }
-                return Container();
-              },
-            ),
-          ],
-        ),
-      );
+                    ),
+                  ],
+                );
+              }
+              return Container(
+                color: Colors.green,
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

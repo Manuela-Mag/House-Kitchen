@@ -15,10 +15,13 @@ class MealBloc extends Bloc<MealEvent, MealState> {
     on<LoadCategory>((event, emit) async {
       await Future<void>.delayed(const Duration(seconds: 1));
       emit(CategoryLoadingState());
+      emit(MealLoadingState());
       print("load category");
       try {
         final categories = await _mealRepository.getListOfCategories();
-        emit(CategoryLoadedState(categories, 'beef'));
+        emit(CategoryLoadedState(categories, 'Beef'));
+        final meals = await _mealRepository.getListOfMeals('Beef');
+        emit(MealLoadedState(meals));
       }
       catch(e) {
         print(e);
