@@ -4,6 +4,7 @@ import 'package:kitchen_house/blocs/category/category_bloc.dart';
 import 'package:kitchen_house/models/category_model.dart';
 import 'package:kitchen_house/repos/meal_repo.dart';
 import 'blocs/meal/meal_bloc.dart';
+import 'custom_widgets/custom_collapsible.dart';
 import 'models/meal_model.dart';
 
 void main() {
@@ -79,26 +80,29 @@ class _MyHomePageState extends State<MyHomePage> {
         Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text(
-          'House Kitchen',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-        ),
+        title:  Image.asset(
+          'assets/title.png'
+        )
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "All Categories",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
-                )
-              ],
+          const CustomCollapsible(),
+          Container(
+            color: const Color(0xFDD3D3D3),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:  const [
+                  Text(
+                    "All Categories",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           BlocBuilder<MealBloc, MealState>(
@@ -117,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 List<CategoryModel> categories = state.categories;
                 context.read<MealBloc>().add(LoadMeal(selectedCategory));
                 return Card(
-                  color: Colors.white60,
+                  color: Colors.white10,
                   child: SizedBox(
                     height: 110,
                     child: PageView.builder(
@@ -125,28 +129,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPageChanged: (index) {
                         pageChanged(index, categories[index].name);
                       },
-                      // onPageChanged: (int index) => setState(() => {i = index}),
                       itemBuilder: (_, i) {
-                        // Constants.CategoryHighlighted =
-                        // Constants.itemCategory[_index]["name"];
-                        final selectedCategory = categories[i];
-
                         for (int j = i; j < categories.length; j++) {
                           final selectedCategory = categories[j];
                           cards.add(
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  print(this.selectedCategory);
                                   this.selectedCategory = categories[j].name;
-                                  print("GESTURE DECTOR");
-                                  print(selectedIndex);
-                                  this.selectedIndex = j;
-                                  print(selectedIndex);
+                                  selectedIndex = j;
                                   context
                                       .read<MealBloc>()
                                       .add(LoadMeal(this.selectedCategory));
-                                  print(this.selectedCategory);
                                 });
                               },
                               child: Card(
@@ -163,12 +157,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                   height: 100,
                                   margin: const EdgeInsets.only(top: 10.0),
                                   child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
-                                      Image.network(
-                                        selectedCategory.image,
-                                        height: 50,
-                                        width: 80,
-                                        fit: BoxFit.cover,
+                                      ClipRRect(
+                                        borderRadius:
+                                        BorderRadius.circular(
+                                            20),
+                                        child: Image.network(
+                                          selectedCategory.image,
+                                          height: 50,
+                                          width: 80,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                       Container(
                                         alignment: Alignment.bottomCenter,
@@ -216,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Container(
                       color: const Color(0xFDD3D3D3),
                       child: SizedBox(
-                        height: 540,
+                        height: 450,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -227,7 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     gridDelegate:
                                         const SliverGridDelegateWithMaxCrossAxisExtent(
                                             maxCrossAxisExtent: 200,
-                                            // childAspectRatio: 3 / 2,
                                             crossAxisSpacing: 5,
                                             mainAxisSpacing: 5),
                                     shrinkWrap: true,
