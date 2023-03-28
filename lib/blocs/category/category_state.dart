@@ -11,8 +11,9 @@ class CategoryLoadingState extends CategoryState {
 
 //data loaded state
 class CategoryLoadedState extends CategoryState {
-  CategoryLoadedState(this.categories);
+  CategoryLoadedState(this.categories, this.selectedCategory);
   final List<CategoryModel> categories;
+  final String selectedCategory;
 
   @override
   List<Object?> get props => [categories];
