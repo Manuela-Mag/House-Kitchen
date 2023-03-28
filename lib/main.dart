@@ -23,16 +23,16 @@ class MyApp extends StatelessWidget {
           // BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadMeal())),
         ],
         child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: RepositoryProvider(
-          create: (context) => MealRepository(),
-          child: const MyHomePage(title: 'House Kitchen'),
-        )));
+              create: (context) => MealRepository(),
+              child: const MyHomePage(),
+            )));
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -78,7 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
         //   child:
         Scaffold(
       appBar: AppBar(
-        title: const Text('House Kitchen'),
+        backgroundColor: Colors.black,
+        title: const Text(
+          'House Kitchen',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+        ),
       ),
       body: Column(
         children: [
@@ -135,7 +139,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 setState(() {
                                   print(this.selectedCategory);
                                   this.selectedCategory = categories[j].name;
-                                  selectedIndex = j;
+                                  print("GESTURE DECTOR");
+                                  print(selectedIndex);
+                                  this.selectedIndex = j;
+                                  print(selectedIndex);
                                   context
                                       .read<MealBloc>()
                                       .add(LoadMeal(this.selectedCategory));
@@ -146,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 elevation: 6,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
-                                    side: selectedIndex == j
+                                    side: selectedIndex == j || j == 0
                                         ? const BorderSide(
                                             color: Colors.black, width: 2.0)
                                         : BorderSide.none),
@@ -236,14 +243,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                           // margin: const EdgeInsets.symmetric(vertical: 10),
                                           child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
                                               //     .spaceEvenly,
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.all(8.0),
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
                                                   child: ClipRRect(
                                                     borderRadius:
-                                                        BorderRadius.circular(20),
+                                                        BorderRadius.circular(
+                                                            20),
                                                     // Image border
                                                     child: Image.network(
                                                       mealsList[index].image,
@@ -253,29 +263,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.only(left: 5.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0),
                                                   child: Text(
-                                                      mealsList[index].name,
+                                                    mealsList[index].name,
                                                     textAlign: TextAlign.center,
                                                     style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w700,
-                                                      fontFamily: 'Manrope'
-                                                    ),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontFamily: 'Manrope'),
                                                   ),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.only(left: 5.0, top: 5),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 5.0, top: 5),
                                                   child: Text(
                                                     selectedCategory,
                                                     textAlign: TextAlign.left,
                                                     style: const TextStyle(
                                                         fontSize: 12,
-                                                        fontWeight: FontWeight.w600,
-                                                        fontStyle: FontStyle.italic,
-                                                        color: Color(0xFD9C9C9C),
-                                                        fontFamily: 'Manrope'
-                                                    ),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        color:
+                                                            Color(0xFD9C9C9C),
+                                                        fontFamily: 'Manrope'),
                                                   ),
                                                 ),
                                               ]));
