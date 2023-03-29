@@ -9,30 +9,25 @@ part 'meal_event.dart';
 part 'meal_state.dart';
 
 class MealBloc extends Bloc<MealEvent, MealState> {
-  final MealRepository _mealRepository;
-
   MealBloc(this._mealRepository) : super(CategoryLoadingState()) {
-    on<LoadCategory>((event, emit) async {
+    on<LoadCategory>((LoadCategory event, Emitter<MealState> emit) async {
       await Future<void>.delayed(const Duration(seconds: 1));
       emit(CategoryLoadingState());
       emit(MealLoadingState());
-      print("load category");
       try {
-        final categories = await _mealRepository.getListOfCategories();
+        final List<CategoryModel> categories = await _mealRepository.getListOfCategories();
         emit(CategoryLoadedState(categories, 'Beef'));
-        final meals = await _mealRepository.getListOfMeals('Beef');
+        final List<MealModel> meals = await _mealRepository.getListOfMeals('Beef');
         emit(MealLoadedState(meals));
       }
       catch(e) {
-        print(e);
         emit(MealLoadingErrorState(e.toString()));
       }
     });
-    on<LoadMeal>((event, emit) async {
-      print("load meal");
+    on<LoadMeal>((LoadMeal event, Emitter<MealState> emit) async {
       emit(MealLoadingState());
       try {
-        final meals = await _mealRepository.getListOfMeals(event.selectedCategoryName);
+        final List<MealModel> meals = await _mealRepository.getListOfMeals(event.selectedCategoryName);
         emit(MealLoadedState(meals));
       }
       catch(e) {
@@ -40,4 +35,5 @@ class MealBloc extends Bloc<MealEvent, MealState> {
       }
     });
   }
+  final MealRepository _mealRepository;
 }

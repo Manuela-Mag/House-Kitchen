@@ -7,7 +7,7 @@ abstract class MealEvent extends Equatable {
 
 class LoadCategory extends MealEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class LoadMeal extends MealEvent {
@@ -15,6 +15,6 @@ class LoadMeal extends MealEvent {
   final String selectedCategoryName;
 
   @override
-  List<Object?> get props => [selectedCategoryName];
+  List<Object?> get props => <String>[selectedCategoryName];
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kitchen_house/blocs/category/category_bloc.dart';
 import 'package:kitchen_house/models/category_model.dart';
 import 'package:kitchen_house/repos/meal_repo.dart';
 import 'blocs/meal/meal_bloc.dart';
@@ -15,21 +14,18 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-              create: (context) =>
+  Widget build(BuildContext context) => MultiBlocProvider(
+        providers: <BlocProvider<Bloc<dynamic, dynamic>>> [
+          BlocProvider <MealBloc> (
+              create: (BuildContext context) =>
                   MealBloc(MealRepository())..add(LoadCategory())),
-          // BlocProvider(create: (context) => MealBloc(MealRepository())..add(LoadMeal())),
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: RepositoryProvider(
-              create: (context) => MealRepository(),
+            home: RepositoryProvider<MealRepository> (
+              create: (BuildContext context) => MealRepository(),
               child: const MyHomePage(),
             )));
-  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -42,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String selectedCategory = 'Beef';
   int selectedIndex = 0;
-  List<Widget> cards = [];
+  List<Widget> cards = <Widget>[];
 
   @override
   void initState() {
@@ -51,33 +47,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void pageChanged(int index, String category) {
     setState(() {
-      print(category);
-      print(index);
       selectedIndex = index;
       selectedCategory = category;
     });
   }
 
-  // final String title;
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    //use only one block?
-
-    return
-        // MultiBlocProvider(
-        //   providers: [
-        //     BlocProvider(create: (context) =>
-        //     MealBloc(RepositoryProvider.of<MealRepository>(context),
-        //     )
-        //       ..add(LoadMeal())),
-        //     BlocProvider(create: (context) =>
-        //     CategoryBloc(RepositoryProvider.of<MealRepository>(context),
-        //     )
-        //       ..add(LoadCategory()))
-        //   ],
-        //   child:
-        Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
         title:  Image.asset(
@@ -85,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ),
       body: Column(
-        children: [
+        children: <Widget> [
           const CustomCollapsible(),
           Container(
             color: const Color(0xFDD3D3D3),
@@ -93,9 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(15.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children:  const [
+                children: const <Widget> [
                   Text(
-                    "All Categories",
+                    'All Categories',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -106,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           BlocBuilder<MealBloc, MealState>(
-            builder: (context, state) {
+            builder: (BuildContext context, MealState state) {
               if (state is MealLoadingState) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -118,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }
               if (state is CategoryLoadedState) {
-                List<CategoryModel> categories = state.categories;
+                final List<CategoryModel> categories = state.categories;
                 context.read<MealBloc>().add(LoadMeal(selectedCategory));
                 return Card(
                   color: Colors.white10,
@@ -126,12 +103,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 110,
                     child: PageView.builder(
                       itemCount: 5,
-                      onPageChanged: (index) {
+                      onPageChanged: (int index) {
                         pageChanged(index, categories[index].name);
                       },
-                      itemBuilder: (_, i) {
+                      itemBuilder: (_, int i) {
                         for (int j = i; j < categories.length; j++) {
-                          final selectedCategory = categories[j];
+                          final CategoryModel selectedCategory = categories[j];
                           cards.add(
                             GestureDetector(
                               onTap: () {
@@ -158,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   margin: const EdgeInsets.only(top: 10.0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
+                                    children: <Widget> [
                                       ClipRRect(
                                         borderRadius:
                                         BorderRadius.circular(
@@ -188,7 +165,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           );
                         }
-                        print("list view");
                         return ListView(
                             scrollDirection: Axis.horizontal, children: cards);
                       },
@@ -196,11 +172,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               }
-              print(state);
               if (state is MealLoadedState) {
-                List<MealModel> mealsList = state.meals;
+                final List<MealModel> mealsList = state.meals;
                 return Column(
-                  children: [
+                  children: <Widget> [
                     Container(
                       color: const Color(0xFDD3D3D3),
                       child: SizedBox(
@@ -219,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 450,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
+                          children: <Widget> [
                             Expanded(
                               child: Container(
                                 color: const Color(0xFDD3D3D3),
@@ -228,11 +203,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                         const SliverGridDelegateWithMaxCrossAxisExtent(
                                             maxCrossAxisExtent: 200,
                                             crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5),
+                                            mainAxisSpacing: 5,),
                                     shrinkWrap: true,
                                     scrollDirection: Axis.vertical,
                                     itemCount: mealsList.length,
-                                    itemBuilder: (_, index) {
+                                    itemBuilder: (_, int index) {
                                       return Card(
                                           color: Colors.white,
                                           elevation: 4,
@@ -245,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
                                               //     .spaceEvenly,
-                                              children: [
+                                              children: <Widget> [
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),

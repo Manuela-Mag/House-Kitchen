@@ -9,10 +9,10 @@ class MealRepository {
   String endpointCategories = 'https://www.themealdb.com/api/json/v1/1/categories.php';
 
   Future<List<MealModel>> getListOfMeals(String categoryName) async {
-    http.Response response = await http.get(Uri.parse(endpoint + categoryName), headers: {"Content-Type": "application/json"});
+    final http.Response response = await http.get(Uri.parse(endpoint + categoryName), headers: <String, String>{'Content-Type': 'application/json'});
     if(response.statusCode == 200) {
-      final List meals = jsonDecode(response.body)['meals'];
-      return meals.map(((e) => MealModel.fromJson(e))).toList();
+      final List<dynamic> meals = jsonDecode(response.body)['meals'] as List<dynamic>;
+      return meals.map((dynamic e) => MealModel.fromJson(e)).toList();
     }
     else {
       throw Exception(response.reasonPhrase);
@@ -20,10 +20,10 @@ class MealRepository {
   }
 
   Future<List<CategoryModel>> getListOfCategories() async {
-    http.Response response = await http.get(Uri.parse(endpointCategories), headers: {"Content-Type": "application/json"});
+    final http.Response response = await http.get(Uri.parse(endpointCategories), headers: <String, String>{'Content-Type': 'application/json'});
     if(response.statusCode == 200) {
-      final List categories = jsonDecode(response.body)['categories'];
-      return categories.map(((e) => CategoryModel.fromJson(e))).toList();
+      final List<dynamic> categories = jsonDecode(response.body)['categories'] as List<dynamic>;
+      return categories.map((dynamic e) => CategoryModel.fromJson(e)).toList();
     }
     else {
       throw Exception(response.reasonPhrase);

@@ -30,10 +30,10 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
           padding: const EdgeInsets.only(left: 15, bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget> [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget> [
                   const Text(
                     'Hello, Alexander!',
                     style: TextStyle(
@@ -60,7 +60,7 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                       });
                     },
                     child: Row(
-                      children: [
+                      children: <Widget> [
                         // flag ? const SizedBox(height: 20) : const SizedBox(),
                         SizedBox(
                           height: flag ? 15 : 25,
@@ -85,7 +85,7 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                 ],
               ),
               Column(
-                children: [
+                children: <Widget> [
                   Padding(
                     padding: const EdgeInsets.only(right: 10.0, bottom: 30),
                     child: Image.asset('assets/avatar.png',
