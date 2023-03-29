@@ -22,6 +22,10 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: Colors.red,
+              fontFamily: 'Poppins'
+            ),
             home: RepositoryProvider<MealRepository> (
               create: (BuildContext context) => MealRepository(),
               child: const MyHomePage(),
@@ -38,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String selectedCategory = 'Beef';
   int selectedIndex = 0;
+  int chosen = -1;
   List<Widget> cards = <Widget>[];
 
   @override
@@ -45,12 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  void pageChanged(int index, String category) {
-    setState(() {
-      selectedIndex = index;
-      selectedCategory = category;
-    });
-  }
+  // void pageChanged(int index, String category) {
+  //   setState(() {
+  //
+  //     selectedIndex = index;
+  //     selectedCategory = category;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             color: const Color(0xFDD3D3D3),
             child: Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.only(left: 15.0, top: 10.0, bottom: 5.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const <Widget> [
@@ -103,18 +109,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 110,
                     child: PageView.builder(
                       itemCount: 5,
-                      onPageChanged: (int index) {
-                        pageChanged(index, categories[index].name);
-                      },
                       itemBuilder: (_, int i) {
                         for (int j = i; j < categories.length; j++) {
                           final CategoryModel selectedCategory = categories[j];
+                          print("1" + selectedIndex.toString() + j.toString());
                           cards.add(
                             GestureDetector(
                               onTap: () {
                                 setState(() {
                                   this.selectedCategory = categories[j].name;
                                   selectedIndex = j;
+                                  print("2" + selectedIndex.toString() + j.toString());
                                   context
                                       .read<MealBloc>()
                                       .add(LoadMeal(this.selectedCategory));
@@ -124,10 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 elevation: 6,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
-                                    side: selectedIndex == j || j == 0
+                                    side: selectedIndex == j
                                         ? const BorderSide(
                                             color: Colors.black, width: 2.0)
-                                        : BorderSide.none),
+                                        : const BorderSide(
+                                        color: Colors.white, width: 2.0)),
                                 color: Colors.white,
                                 child: Container(
                                   width: 90,
@@ -149,12 +155,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       Container(
                                         alignment: Alignment.bottomCenter,
-                                        child: Text(
-                                          selectedCategory.name,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
+                                        child: Tooltip(
+                                          message: selectedCategory.name,
+                                          child: Text(
+                                            selectedCategory.name,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -165,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           );
                         }
+                        print("3" + selectedIndex.toString());
                         return ListView(
                             scrollDirection: Axis.horizontal, children: cards);
                       },
@@ -174,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
               if (state is MealLoadedState) {
                 final List<MealModel> mealsList = state.meals;
+                print("4" + selectedIndex.toString());
                 return Column(
                   children: <Widget> [
                     Container(
@@ -190,97 +204,104 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Container(
                       color: const Color(0xFDD3D3D3),
-                      child: SizedBox(
-                        height: 450,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget> [
-                            Expanded(
-                              child: Container(
-                                color: const Color(0xFDD3D3D3),
-                                child: GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 200,
-                                            crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5,),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: mealsList.length,
-                                    itemBuilder: (_, int index) {
-                                      return Card(
-                                          color: Colors.white,
-                                          elevation: 4,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                          // margin: const EdgeInsets.symmetric(vertical: 10),
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              //     .spaceEvenly,
-                                              children: <Widget> [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    // Image border
-                                                    child: Image.network(
-                                                      mealsList[index].image,
-                                                      // width: 180,
-                                                      height: 110,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                        child: SizedBox(
+                          height: 450,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget> [
+                              Expanded(
+                                child: Container(
+                                  color: const Color(0xFDD3D3D3),
+                                  child: GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                                              maxCrossAxisExtent: 200,
+                                              crossAxisSpacing: 5,
+                                              mainAxisSpacing: 5),
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: mealsList.length,
+                                      itemBuilder: (_, int index) {
+                                        return SizedBox(
+                                          height:  MediaQuery.of(context).size.height * 0.4,
+                                          child: Card(
+                                              color: Colors.white,
+                                              elevation: 4,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget> [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(left: 30.0, top: 10, ),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                20),
+                                                        child: Image.network(
+                                                          mealsList[index].image,
+                                                          height: MediaQuery.of(context).size.height * 0.15,
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5.0),
-                                                  child: Text(
-                                                    mealsList[index].name,
-                                                    textAlign: TextAlign.center,
-                                                    style: const TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontFamily: 'Manrope'),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5.0, top: 5),
-                                                  child: Text(
-                                                    selectedCategory,
-                                                    textAlign: TextAlign.left,
-                                                    style: const TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontStyle:
-                                                            FontStyle.italic,
-                                                        color:
-                                                            Color(0xFD9C9C9C),
-                                                        fontFamily: 'Manrope'),
-                                                  ),
-                                                ),
-                                              ]));
-                                    }),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 15.0, top: 10),
+                                                      child: Tooltip(
+                                                        message: mealsList[index].name,
+                                                        child: Text(
+                                                          mealsList[index].name,
+                                                          textAlign: TextAlign.start,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          textDirection: TextDirection.ltr,
+                                                          style: const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight.w700),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 15.0, top: 5),
+                                                      child: Text(
+                                                        selectedCategory,
+                                                        textAlign: TextAlign.left,
+                                                        style: const TextStyle(
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontStyle:
+                                                                FontStyle.italic,
+                                                            color:
+                                                                Color(0xFD9C9C9C),
+                                                            fontFamily: 'Urbanist'),
+                                                      ),
+                                                    ),
+                                                  ])),
+                                        );
+                                      }),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ],
                 );
               }
-              return Container(
-                color: Colors.green,
+              return  const Text(
+                'No data is available. Please try again later'
               );
             },
           ),

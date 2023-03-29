@@ -38,7 +38,6 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                     'Hello, Alexander!',
                     style: TextStyle(
                         color: Colors.white,
-                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
                         fontSize: 20),
                   ),
@@ -47,10 +46,9 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                     child: Text(
                       'Shop Location',
                       style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Poppins',
+                          color: Colors.white70,
                           fontWeight: FontWeight.w600,
-                          fontSize: 10),
+                          fontSize: 12),
                     ),
                   ),
                   InkWell(
@@ -63,16 +61,16 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                       children: <Widget> [
                         // flag ? const SizedBox(height: 20) : const SizedBox(),
                         SizedBox(
-                          height: flag ? 15 : 25,
+                          height: flag ? 20 : 25,
                           child: Text(
                             flag
                                 ? 'Cluj-Napoca, Iulius...'
                                 : 'Cluj-Napoca, Iulius Mall, nr 33B',
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white, fontSize: 10),
                           ),
                         ),
                         Padding(
-                          padding:  EdgeInsets.only(left: 20, bottom: flag ? 0 : 5),
+                          padding:  EdgeInsets.only(left: 20, bottom: flag ? 2 : 7),
                           child: Icon(flag ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
                               color: Colors.white, size: 20),
                         )

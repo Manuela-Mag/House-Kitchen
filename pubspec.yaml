@@ -27,6 +27,20 @@ flutter:
   assets:
     - assets/
 
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Italic.ttf
+
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope/static/Manrope-Regular.ttf
+
+    - family: Urbanist
+      fonts:
+        - asset: assets/fonts/Urbanist/static/Urbanist-Regular.ttf
+        - asset: assets/fonts/Urbanist/static/Urbanist-Italic.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
