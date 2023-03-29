@@ -59,7 +59,6 @@ class _CustomCollapsibleState extends State<CustomCollapsible> {
                     },
                     child: Row(
                       children: <Widget> [
-                        // flag ? const SizedBox(height: 20) : const SizedBox(),
                         SizedBox(
                           height: flag ? 20 : 25,
                           child: Text(

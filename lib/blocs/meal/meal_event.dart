@@ -17,4 +17,3 @@ class LoadMeal extends MealEvent {
   @override
   List<Object?> get props => <String>[selectedCategoryName];
 }
-

@@ -42,21 +42,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String selectedCategory = 'Beef';
   int selectedIndex = 0;
-  int chosen = -1;
+  int chosen = 0;
   List<Widget> cards = <Widget>[];
+  List<CategoryModel> categoriesList = <CategoryModel>[];
 
   @override
   void initState() {
     super.initState();
+    cards = <Widget>[];
   }
-
-  // void pageChanged(int index, String category) {
-  //   setState(() {
-  //
-  //     selectedIndex = index;
-  //     selectedCategory = category;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -111,73 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemCount: 5,
                       itemBuilder: (_, int i) {
                         for (int j = i; j < categories.length; j++) {
-                          final CategoryModel selectedCategory = categories[j];
-                          print("1" + selectedIndex.toString() + j.toString());
-                          cards.add(
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  this.selectedCategory = categories[j].name;
-                                  selectedIndex = j;
-                                  print("2" + selectedIndex.toString() + j.toString());
-                                  context
-                                      .read<MealBloc>()
-                                      .add(LoadMeal(this.selectedCategory));
-                                });
-                              },
-                              child: Card(
-                                elevation: 6,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    side: selectedIndex == j
-                                        ? const BorderSide(
-                                            color: Colors.black, width: 2.0)
-                                        : const BorderSide(
-                                        color: Colors.white, width: 2.0)),
-                                color: Colors.white,
-                                child: Container(
-                                  width: 90,
-                                  height: 100,
-                                  margin: const EdgeInsets.only(top: 10.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: <Widget> [
-                                      ClipRRect(
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            20),
-                                        child: Image.network(
-                                          selectedCategory.image,
-                                          height: 50,
-                                          width: 80,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Container(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Tooltip(
-                                          message: selectedCategory.name,
-                                          child: Text(
-                                            selectedCategory.name,
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
+                          categoriesList = categories;
+                          cards = getListOfCards(categories, selectedIndex);
                         }
-                        print("3" + selectedIndex.toString());
                         return ListView(
                             scrollDirection: Axis.horizontal, children: cards);
                       },
@@ -187,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
               if (state is MealLoadedState) {
                 final List<MealModel> mealsList = state.meals;
-                print("4" + selectedIndex.toString());
+                cards = getListOfCards(categoriesList, chosen);
                 return Column(
                   children: <Widget> [
                     Container(
@@ -272,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.only(
-                                                              left: 15.0, top: 5),
+                                                              left: 15.0, bottom: 5),
                                                       child: Text(
                                                         selectedCategory,
                                                         textAlign: TextAlign.left,
@@ -308,5 +238,74 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+
+  List<Widget> getListOfCards(List<CategoryModel> categories, int selectedIndex) {
+    final List<Widget> newCards =  <Widget>[];
+    for (int j = 0; j < categories.length; j++) {
+      final CategoryModel selectedCategoryItem = categories[j];
+      newCards.add(GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedCategory = categories[j].name;
+              chosen = j;
+              context
+                  .read<MealBloc>()
+                  .add(LoadMeal(selectedCategory));
+            });
+          },
+          child: Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                  side: chosen == j
+                  ? const BorderSide(
+                  color: Colors.black, width: 2.0)
+                  : const BorderSide(
+              color: Colors.white, width: 2.0)),
+        color: Colors.white,
+        child: Container(
+          width: 90,
+          height: 100,
+          margin: const EdgeInsets.only(top: 10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              ClipRRect(
+                borderRadius:
+                BorderRadius.circular(
+                    20),
+                child: Image.network(
+                  selectedCategoryItem.image,
+                  height: 50,
+                  width: 80,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: Tooltip(
+                  message: selectedCategoryItem.name,
+                  child: Text(
+                    selectedCategoryItem.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),)
+    );
+    }
+    return newCards;
   }
 }

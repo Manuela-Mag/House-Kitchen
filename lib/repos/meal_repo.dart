@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kitchen_house/models/meal_model.dart';
-
 import '../models/category_model.dart';
 
 class MealRepository {
