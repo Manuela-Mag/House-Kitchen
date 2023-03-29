@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              primaryColor: Colors.red,
               fontFamily: 'Poppins'
             ),
             home: RepositoryProvider<MealRepository> (
